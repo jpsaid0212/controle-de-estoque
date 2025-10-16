@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Categoria;
-use App\Models\Fornecedor; // Certifique-se de importar Fornecedor
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Produto extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
+
+    protected $table = 'produtos';
 
     protected $fillable = [
         'nome',
@@ -17,18 +17,36 @@ class Produto extends Model
         'categoria_id',
         'fornecedor_id',
         'quantidade',
-        'preco'
+        'preco',
     ];
 
-    // Relação com Categoria (Muitos para Um)
-    public function categoria()
+    protected $casts = [
+        'preco' => 'decimal:2',
+        'quantidade' => 'integer',
+    ];
+
+    // aceita "50,99" e "1.234,56"
+    public function setPrecoAttribute($value): void
     {
-        return $this->belongsTo(Categoria::class);
+        if (is_string($value)) {
+            $value = str_replace(['.', ','], ['', '.'], $value);
+        }
+        $this->attributes['preco'] = $value === '' || $value === null ? 0 : (float) $value;
     }
 
-    // Relação com Fornecedor (Muitos para Um)
+    // RELACIONAMENTOS
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'categoria_id');
+    }
+
     public function fornecedor()
     {
-        return $this->belongsTo(Fornecedor::class);
+        return $this->belongsTo(Fornecedor::class, 'fornecedor_id');
+    }
+
+    public function movimentacoes()
+    {
+        return $this->hasMany(Movimentacao::class, 'produto_id');
     }
 }

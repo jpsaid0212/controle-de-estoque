@@ -128,7 +128,16 @@
 
         <div class="mb-3">
             <label for="preco" class="form-label">Preço</label>
-            <input type="text" name="preco" id="preco" class="form-control" value="{{ $produto->preco }}" required>
+            <input
+                type="text"
+                name="preco"
+                id="preco"
+                class="form-control"
+                inputmode="decimal"
+                placeholder="Ex.: 50,99"
+                value="{{ old('preco', number_format($produto->preco, 2, ',', '.')) }}"
+                required
+            >
         </div>
 
         <button type="submit" class="btn btn-primary">

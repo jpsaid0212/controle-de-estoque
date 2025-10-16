@@ -103,7 +103,15 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Preço</label>
-            <input type="text" name="preco" class="form-control" required>
+            <input
+                type="text"
+                name="preco"
+                class="form-control"
+                inputmode="decimal"
+                placeholder="Ex.: 50,99"
+                value="{{ old('preco') }}"
+                required
+            >
         </div>
         <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Salvar</button>
         <a href="{{ route('produtos.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar</a>

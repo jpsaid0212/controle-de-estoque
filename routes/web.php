@@ -28,6 +28,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rotas de Produtos
     Route::resource('produtos', ProdutoController::class);
+    Route::resource('produtos', ProdutoController::class);
+    Route::post('produtos/limpar-lixeira', [ProdutoController::class, 'cleanTrash'])->name('produtos.clean-trash');
+    Route::get('produtos/lixeira', [ProdutoController::class, 'trash'])->name('produtos.trash');
+    Route::post('produtos/{id}/restaurar', [ProdutoController::class, 'restore'])->name('produtos.restore');
+    Route::delete('produtos/{produto}/force', [ProdutoController::class, 'forceDestroy'])->name('produtos.force-destroy');
+    Route::post('produtos/lixeira/limpar', [ProdutoController::class, 'cleanTrash'])->name('produtos.clean-trash');
 
     // Rotas de Fornecedores
     Route::resource('fornecedores', FornecedorController::class);

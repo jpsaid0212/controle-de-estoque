@@ -91,15 +91,17 @@
         background-color: #b71c1c;
     }
 
-    /* Estilizando os ícones */
-    .btn i {
-        margin-right: 5px;
-    }
-
+    .btn i { margin-right: 5px; }
 </style>
 
-
     <h1>Lista de Produtos</h1>
+
+    @if(session('success'))
+    <div class="alert alert-success mt-2">
+        {{ session('success') }}
+    </div>
+    @endif
+
 
     <a href="{{ route('produtos.create') }}" class="btn btn-primary mb-3">
         <i class="fas fa-plus"></i> Adicionar Produto
@@ -109,23 +111,36 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    <form action="{{ route('produtos.clean-trash') }}" method="POST" style="display:inline;" onsubmit="return confirm('Limpar a lixeira (itens com mais de 30 dias)?');">
+        @csrf
+        <button type="submit" class="btn btn-danger mb-3 ml-2">
+            <i class="fas fa-broom"></i> Limpar lixeira
+        </button>
+    </form>
+
+
     <table class="table table-striped table-hover table-dark">
         <thead>
             <tr>
                 <th>Nome</th>
                 <th>Categoria</th>
                 <th>Quantidade</th>
-                <th>Preço</th>
+                <th>Preço Unitário</th>
+                <th>Valor (Qtd × Preço)</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             @foreach($produtos as $produto)
+            @php
+                $valorLinha = $produto->quantidade * (float) $produto->preco;
+            @endphp
             <tr>
                 <td>{{ $produto->nome }}</td>
-                <td>{{ $produto->categoria->nome }}</td>
+                <td>{{ $produto->categoria?->nome ?? '—' }}</td>
                 <td>{{ $produto->quantidade }}</td>
                 <td>R$ {{ number_format($produto->preco, 2, ',', '.') }}</td>
+                <td>R$ {{ number_format($valorLinha, 2, ',', '.') }}</td>
                 <td>
                     <a href="{{ route('produtos.edit', $produto->id) }}" class="btn btn-warning btn-sm">
                         <i class="fas fa-edit"></i> Editar
@@ -140,10 +155,18 @@
             </tr>
             @endforeach
         </tbody>
+
+        <tfoot>
+            <tr>
+                <td colspan="4" class="text-right font-weight-bold">Valor total do estoque</td>
+                <td class="font-weight-bold">
+                    R$ {{ number_format($valorTotalEstoque ?? 0, 2, ',', '.') }}
+                </td>
+                <td></td>
+            </tr>
+        </tfoot>
     </table>
 
-
-<!-- Importando Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
 @endsection
